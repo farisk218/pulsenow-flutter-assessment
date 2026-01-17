@@ -6,8 +6,8 @@
 //   final int activeMarkets;
 //   final MarketLeader topGainer;
 //   final MarketLeader topLoser;
-//   
+//
 //   AnalyticsOverview({...});
-//   
+//
 //   factory AnalyticsOverview.fromJson(Map<String, dynamic> json) {...}
 // }

@@ -8,8 +8,8 @@
 //   final double currentPrice;
 //   final double pnl;
 //   final double pnlPercent;
-//   
+//
 //   PortfolioHolding({...});
-//   
+//
 //   factory PortfolioHolding.fromJson(Map<String, dynamic> json) {...}
 // }
