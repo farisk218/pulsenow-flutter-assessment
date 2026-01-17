@@ -16,22 +16,45 @@ class AnalyticsProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // TODO: Implement methods
-  // - loadOverview()
-  // - loadTrends(String timeframe)
-  // - loadSentiment()
-
   Future<void> loadOverview() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      // TODO: Implement API call
-      // final response = await _apiService.getAnalyticsOverview();
-      // _overview = response['data'];
+      _overview = await _apiService.getAnalyticsOverview();
     } catch (e) {
-      _error = e.toString();
+      _error = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadTrends({String timeframe = '24h'}) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _trends = await _apiService.getAnalyticsTrends(timeframe: timeframe);
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadSentiment() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _sentiment = await _apiService.getAnalyticsSentiment();
+    } catch (e) {
+      _error = e.toString().replaceFirst('Exception: ', '');
     } finally {
       _isLoading = false;
       notifyListeners();

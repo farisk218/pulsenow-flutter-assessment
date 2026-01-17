@@ -7,20 +7,20 @@ import '../core/services/websocket/websocket_service.dart';
 class MarketDataProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
   final WebSocketService _webSocketService = WebSocketService();
-  
+
   List<MarketData> _marketData = [];
   bool _isLoading = false;
   String? _error;
   StreamSubscription<Map<String, dynamic>>? _wsSubscription;
-  
+
   List<MarketData> get marketData => _marketData;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  
+
   MarketDataProvider() {
     _initWebSocket();
   }
-  
+
   void _initWebSocket() {
     _wsSubscription = _webSocketService.messageStream.listen((message) {
       if (message['type'] == 'market_update') {
@@ -28,15 +28,18 @@ class MarketDataProvider with ChangeNotifier {
       }
     });
   }
-  
+
+  /// Handles real-time market updates from WebSocket
+  ///
+  /// Updates matching symbol in the list and recalculates change percentage
   void _handleMarketUpdate(Map<String, dynamic> updateData) {
     final symbol = updateData['symbol'] as String?;
     if (symbol == null) return;
-    
+
     final index = _marketData.indexWhere((m) => m.symbol == symbol);
     if (index != -1) {
       final existing = _marketData[index];
-      
+
       // Safe number parsing (handles both string and num types from WebSocket)
       double? parseDouble(dynamic value) {
         if (value == null) return null;
@@ -46,14 +49,13 @@ class MarketDataProvider with ChangeNotifier {
         }
         return null;
       }
-      
+
       // Recalculate changePercent24h if price changed
       final newPrice = parseDouble(updateData['price']) ?? existing.price;
       final priceChange = newPrice - existing.price;
-      final newChangePercent24h = existing.price != 0 
-          ? (priceChange / existing.price) * 100 
-          : existing.changePercent24h;
-      
+      final newChangePercent24h =
+          existing.price != 0 ? (priceChange / existing.price) * 100 : existing.changePercent24h;
+
       final updated = MarketData(
         symbol: existing.symbol,
         price: newPrice,
@@ -66,21 +68,21 @@ class MarketDataProvider with ChangeNotifier {
         marketCap: existing.marketCap,
         lastUpdated: updateData['timestamp'] as String? ?? existing.lastUpdated,
       );
-      
+
       _marketData[index] = updated;
       notifyListeners();
     }
   }
-  
+
   Future<void> loadMarketData() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       final data = await _apiService.getMarketData();
       _marketData = data.map((json) => MarketData.fromJson(json)).toList();
-      
+
       // Connect WebSocket after initial data load
       if (!_webSocketService.isConnected) {
         await _webSocketService.connect();
@@ -92,7 +94,7 @@ class MarketDataProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   @override
   void dispose() {
     _wsSubscription?.cancel();
