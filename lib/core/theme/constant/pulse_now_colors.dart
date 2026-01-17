@@ -28,7 +28,7 @@ class PulseNowColors {
   static const Color lightBorderStrong = Color(0xFFD1D9E6);
 
   // Market colors (same for both themes)
-  static const Color positiveColor =  Color(0xFF4CAF50); // Green
+  static const Color positiveColor = Color(0xFF4CAF50); // Green
   static const Color negativeColor = Color(0xFFF44336); // Red
 }
 

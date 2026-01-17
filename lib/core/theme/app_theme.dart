@@ -96,6 +96,16 @@ class AppTheme {
         color: PulseNowColors.lightBorderSubtle,
         thickness: 0.5,
       ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: PulseNowColors.lightSurfaceAlt,
+        contentTextStyle: const TextStyle(
+          color: PulseNowColors.lightTextPrimary,
+          fontFamily: PulseNowTextTheme.fontFamily,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
     );
   }
 
@@ -187,6 +197,16 @@ class AppTheme {
       dividerTheme: const DividerThemeData(
         color: PulseNowColors.darkBorderSubtle,
         thickness: 0.5,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: PulseNowColors.darkSurfaceAlt,
+        contentTextStyle: const TextStyle(
+          color: PulseNowColors.darkTextPrimary,
+          fontFamily: PulseNowTextTheme.fontFamily,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
