@@ -30,6 +30,9 @@ dependencies:
   
   # Routing
   go_router: ^13.0.0
+  
+  # Animations
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:

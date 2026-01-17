@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/market_data_provider.dart';
 import '../models/market_data_model.dart';
 import '../utils/formatters.dart';
@@ -116,12 +117,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           return RefreshIndicator(
             onRefresh: _handleRefresh,
-            child: CustomScrollView(
-              slivers: [
-                _buildQuickStats(context, topGainer, topLoser, avgChange, provider.marketData.length),
-                _buildMarketListHeader(context),
-                _buildMarketList(context, filteredMarkets),
-              ],
+            child: AnimationLimiter(
+              child: CustomScrollView(
+                slivers: [
+                  _buildQuickStats(context, topGainer, topLoser, avgChange, provider.marketData.length),
+                  _buildMarketListHeader(context),
+                  _buildMarketList(context, filteredMarkets),
+                ],
+              ),
             ),
           );
         },
@@ -307,7 +310,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final market = markets[index];
-          return _MarketListItem(market: market);
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _MarketListItem(market: market),
+              ),
+            ),
+          );
         },
         childCount: markets.length,
       ),
