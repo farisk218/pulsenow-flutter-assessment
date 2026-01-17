@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pulsenow_flutter/core/theme/constant/pulse_now_colors.dart';
 import '../providers/market_data_provider.dart';
 import '../models/market_data_model.dart';
-import '../utils/constants.dart';
 import '../utils/formatters.dart';
 import '../utils/strings.dart';
 import '../shared/widgets/shimmer_widget.dart';
+import '../core/theme/constant/pulse_now_colors.dart';
 
 class MarketDataScreen extends StatefulWidget {
   const MarketDataScreen({super.key});
@@ -192,7 +191,7 @@ class _MarketDataListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = market.isPositiveChange;
-    final changeColor = isPositive ?  PulseNowColors.positiveColor : PulseNowColors.negativeColor;
+    final changeColor = isPositive ? PulseNowColors.positiveColor : PulseNowColors.negativeColor;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
