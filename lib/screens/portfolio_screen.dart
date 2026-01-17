@@ -36,11 +36,33 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.portfolioTab),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? PulseNowColors.darkSurface
+                    : PulseNowColors.lightSurface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/images/pulse-logo.jpeg',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(AppStrings.portfolioTab),
+          ],
+        ),
         actions: [
           IconButton(
             icon: Icon(
-              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
             ),
             onPressed: () {
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
@@ -50,39 +72,39 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         ],
       ),
       body: Consumer<PortfolioProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading && provider.summary == null) {
-            return _buildShimmerLoading(context);
-          }
+      builder: (context, provider, child) {
+        if (provider.isLoading && provider.summary == null) {
+          return _buildShimmerLoading(context);
+        }
 
-          if (provider.error != null && provider.summary == null) {
-            return _buildErrorState(context, provider.error!, provider);
-          }
+        if (provider.error != null && provider.summary == null) {
+          return _buildErrorState(context, provider.error!, provider);
+        }
 
-          return RefreshIndicator(
-            onRefresh: _handleRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (provider.summary != null) _buildSummaryCard(context, provider.summary!),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppStrings.holdings,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  if (provider.holdings.isEmpty)
-                    _buildEmptyState(context)
-                  else
-                    ...provider.holdings.map((holding) => _buildHoldingCard(context, holding)),
-                ],
-              ),
+        return RefreshIndicator(
+          onRefresh: _handleRefresh,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (provider.summary != null) _buildSummaryCard(context, provider.summary!),
+                const SizedBox(height: 16),
+                Text(
+                  AppStrings.holdings,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                if (provider.holdings.isEmpty)
+                  _buildEmptyState(context)
+                else
+                  ...provider.holdings.map((holding) => _buildHoldingCard(context, holding)),
+              ],
             ),
-          );
-        },
+          ),
+        );
+      },
       ),
       bottomNavigationBar: const AppBottomNavBar(),
     );
@@ -91,11 +113,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget _buildShimmerLoading(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         ShimmerWidget(height: 150, radius: 16),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ShimmerWidget(height: 80, radius: 8),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         ShimmerWidget(height: 80, radius: 8),
       ],
     );
@@ -108,7 +130,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
+            Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
             const SizedBox(height: 16),
             Text(
               AppStrings.errorTitle,
@@ -245,11 +267,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppStrings.quantity,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    children: [
+                      Text(
+                        AppStrings.quantity,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     Text(
                       quantity.toStringAsFixed(4),
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -258,11 +280,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      AppStrings.value,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    children: [
+                      Text(
+                        AppStrings.value,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
                     Text(
                       value.formatCurrency(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -330,3 +352,4 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 }
+

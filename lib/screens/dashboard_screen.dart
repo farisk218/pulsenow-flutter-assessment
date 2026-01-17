@@ -67,6 +67,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Row(
           children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? PulseNowColors.darkSurface
+                    : PulseNowColors.lightSurface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/images/pulse-logo.jpeg',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 12),
             const Text(AppStrings.pulseMarket),
             const SizedBox(width: 12),
             Consumer<MarketDataProvider>(

@@ -30,11 +30,33 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.analyticsTab),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? PulseNowColors.darkSurface
+                    : PulseNowColors.lightSurface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/images/pulse-logo.jpeg',
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(AppStrings.analyticsTab),
+          ],
+        ),
         actions: [
           IconButton(
             icon: Icon(
-              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
             ),
             onPressed: () {
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
@@ -44,37 +66,37 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ],
       ),
       body: Consumer<AnalyticsProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading && provider.overview == null) {
-            return _buildShimmerLoading(context);
-          }
+      builder: (context, provider, child) {
+        if (provider.isLoading && provider.overview == null) {
+          return _buildShimmerLoading(context);
+        }
 
-          if (provider.error != null && provider.overview == null) {
-            return _buildErrorState(context, provider.error!, provider);
-          }
+        if (provider.error != null && provider.overview == null) {
+          return _buildErrorState(context, provider.error!, provider);
+        }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              await provider.loadOverview();
-              await provider.loadTrends();
-              await provider.loadSentiment();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (provider.overview != null) _buildOverviewCard(context, provider.overview!),
-                  const SizedBox(height: 16),
-                  if (provider.trends != null) _buildTrendsCard(context, provider.trends!),
-                  const SizedBox(height: 16),
-                  if (provider.sentiment != null) _buildSentimentCard(context, provider.sentiment!),
-                ],
-              ),
+        return RefreshIndicator(
+          onRefresh: () async {
+            await provider.loadOverview();
+            await provider.loadTrends();
+            await provider.loadSentiment();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (provider.overview != null) _buildOverviewCard(context, provider.overview!),
+                const SizedBox(height: 16),
+                if (provider.trends != null) _buildTrendsCard(context, provider.trends!),
+                const SizedBox(height: 16),
+                if (provider.sentiment != null) _buildSentimentCard(context, provider.sentiment!),
+              ],
             ),
-          );
-        },
+          ),
+        );
+      },
       ),
       bottomNavigationBar: const AppBottomNavBar(),
     );
@@ -83,11 +105,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Widget _buildShimmerLoading(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         ShimmerWidget(height: 200, radius: 16),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ShimmerWidget(height: 150, radius: 16),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ShimmerWidget(height: 180, radius: 16),
       ],
     );
@@ -100,7 +122,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
+            Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
             const SizedBox(height: 16),
             Text(
               AppStrings.errorTitle,
@@ -401,3 +423,4 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return PulseNowColors.danger;
   }
 }
+
