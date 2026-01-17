@@ -1,0 +1,2 @@
+/Users/faris-dev/Documents/Projects/pulsenow-assessment/flutter_app/android/app/.cxx/Debug/1j6p4d6f/x86_64/CMakeFiles/edit_cache.dir
+/Users/faris-dev/Documents/Projects/pulsenow-assessment/flutter_app/android/app/.cxx/Debug/1j6p4d6f/x86_64/CMakeFiles/rebuild_cache.dir
