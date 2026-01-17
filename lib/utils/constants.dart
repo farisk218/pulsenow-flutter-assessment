@@ -17,5 +17,4 @@ class AppConstants {
 
   // Timeframes
   static const List<String> timeframes = ['1h', '4h', '1d', '7d', '30d'];
-  
 }

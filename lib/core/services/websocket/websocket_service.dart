@@ -13,8 +13,7 @@ enum WebSocketConnectionState {
 class WebSocketService {
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _subscription;
-  final StreamController<Map<String, dynamic>> _messageController =
-      StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _messageController = StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<WebSocketConnectionState> _stateController =
       StreamController<WebSocketConnectionState>.broadcast();
 
@@ -62,6 +61,9 @@ class WebSocketService {
     }
   }
 
+  /// Handles incoming WebSocket messages
+  ///
+  /// Processes pong responses for heartbeat and forwards market update messages
   void _onMessage(dynamic message) {
     try {
       // Handle pong response for heartbeat (backend should respond with "pong" to "ping")
@@ -69,7 +71,7 @@ class WebSocketService {
         _missedPongCount = 0;
         return;
       }
-      
+
       final data = json.decode(message) as Map<String, dynamic>;
       _messageController.add(data);
     } catch (e) {
@@ -106,7 +108,10 @@ class WebSocketService {
     });
   }
 
-  // Heartbeat: sends "ping" every 10s. Backend should respond with "pong" (if not implemented, still works via send error detection)
+  /// Starts heartbeat mechanism to keep connection alive
+  ///
+  /// Sends "ping" every 10s. Backend should respond with "pong"
+  /// (if not implemented, still works via send error detection)
   void _startHeartbeat() {
     _stopHeartbeat();
     _heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
@@ -155,4 +160,3 @@ class WebSocketService {
     _stateController.close();
   }
 }
-
