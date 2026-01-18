@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/analytics_provider.dart';
 import '../models/analytics_model.dart';
 import '../shared/widgets/shimmer_widget.dart';
@@ -77,29 +78,71 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             return _buildErrorState(context, provider.error!, provider);
           }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              await provider.loadOverview();
-              await provider.loadTrends();
-              await provider.loadSentiment();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (provider.overview != null)
-                    _buildOverviewCard(context, provider.overview!),
-                  const SizedBox(height: 16),
-                  if (provider.trends != null)
-                    _buildTrendsCard(context, provider.trends!),
-                  const SizedBox(height: 16),
-                  if (provider.sentiment != null)
-                    _buildSentimentCard(context, provider.sentiment!),
-                ],
+          return Column(
+            children: [
+              if (provider.isLoading)
+                const LinearProgressIndicator(
+                  minHeight: 2,
+                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await provider.loadOverview();
+                    await provider.loadTrends();
+                    await provider.loadSentiment();
+                  },
+                  child: AnimationLimiter(
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (provider.overview != null)
+                            AnimationConfiguration.staggeredList(
+                              position: 0,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildOverviewCard(
+                                      context, provider.overview!),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          if (provider.trends != null)
+                            AnimationConfiguration.staggeredList(
+                              position: 1,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildTrendsCard(
+                                      context, provider.trends!),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          if (provider.sentiment != null)
+                            AnimationConfiguration.staggeredList(
+                              position: 2,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildSentimentCard(
+                                      context, provider.sentiment!),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           );
         },
       ),

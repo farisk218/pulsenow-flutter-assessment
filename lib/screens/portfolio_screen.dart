@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../providers/portfolio_provider.dart';
 import '../models/portfolio_model.dart';
 import '../shared/widgets/shimmer_widget.dart';
@@ -83,30 +84,73 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             return _buildErrorState(context, provider.error!, provider);
           }
 
-          return RefreshIndicator(
-            onRefresh: _handleRefresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (provider.summary != null)
-                    _buildSummaryCard(context, provider.summary!),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppStrings.holdings,
-                    style: Theme.of(context).textTheme.titleLarge,
+          return Column(
+            children: [
+              if (provider.isLoading)
+                const LinearProgressIndicator(
+                  minHeight: 2,
+                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _handleRefresh,
+                  child: AnimationLimiter(
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (provider.summary != null)
+                            AnimationConfiguration.staggeredList(
+                              position: 0,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildSummaryCard(
+                                      context, provider.summary!),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          AnimationConfiguration.staggeredList(
+                            position: 1,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: Text(
+                                  AppStrings.holdings,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          if (provider.holdings.isEmpty)
+                            _buildEmptyState(context)
+                          else
+                            ...provider.holdings.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final holding = entry.value;
+                              return AnimationConfiguration.staggeredList(
+                                position: index + 2,
+                                duration: const Duration(milliseconds: 375),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                    child: _buildHoldingCard(context, holding),
+                                  ),
+                                ),
+                              );
+                            }),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  if (provider.holdings.isEmpty)
-                    _buildEmptyState(context)
-                  else
-                    ...provider.holdings
-                        .map((holding) => _buildHoldingCard(context, holding)),
-                ],
+                ),
               ),
-            ),
+            ],
           );
         },
       ),
