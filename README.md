@@ -5,10 +5,10 @@ A Flutter application demonstrating real-time crypto market data integration wit
 ## 🎥 Demo & Screenshots
 
 <p align="center">
-  <img src="assets/demo/intro_demo.gif" width="180" />
-  <img src="assets/demo/demo1.png" width="180" />
-  <img src="assets/demo/demo2.png" width="180" />
-  <img src="assets/demo/demo3.png" width="180" />
+  <img src="assets/demo/intro_demo.gif" height="400" />
+  <img src="assets/demo/demo1.png" height="400" />
+  <img src="assets/demo/demo2.png" height="400" />
+  <img src="assets/demo/demo3.png" height="400" />
 </p>
 
 ## ✨ Features
