@@ -7,6 +7,7 @@ import '../utils/formatters.dart';
 import '../utils/strings.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../shared/widgets/server_warning_widget.dart';
 import '../core/theme/constant/pulse_now_colors.dart';
 import '../core/theme/theme_provider.dart';
 
@@ -29,7 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _handleRefresh() async {
-    await Provider.of<MarketDataProvider>(context, listen: false).loadMarketData();
+    await Provider.of<MarketDataProvider>(context, listen: false)
+        .loadMarketData();
   }
 
   List<MarketData> _getFilteredMarkets(List<MarketData> markets) {
@@ -47,12 +49,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   MarketData? _getTopGainer(List<MarketData> markets) {
     if (markets.isEmpty) return null;
-    return markets.reduce((a, b) => a.changePercent24h > b.changePercent24h ? a : b);
+    return markets
+        .reduce((a, b) => a.changePercent24h > b.changePercent24h ? a : b);
   }
 
   MarketData? _getTopLoser(List<MarketData> markets) {
     if (markets.isEmpty) return null;
-    return markets.reduce((a, b) => a.changePercent24h < b.changePercent24h ? a : b);
+    return markets
+        .reduce((a, b) => a.changePercent24h < b.changePercent24h ? a : b);
   }
 
   double _getAverageChange(List<MarketData> markets) {
@@ -87,12 +91,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 12),
             Consumer<MarketDataProvider>(
               builder: (context, provider, child) {
-                final isConnected = provider.error == null && !provider.isLoading;
+                final isConnected =
+                    provider.error == null && !provider.isLoading;
                 return Container(
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: isConnected ? PulseNowColors.secondary : PulseNowColors.danger,
+                    color: isConnected
+                        ? PulseNowColors.secondary
+                        : PulseNowColors.danger,
                     shape: BoxShape.circle,
                   ),
                 );
@@ -103,7 +110,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
             ),
             onPressed: () {
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
@@ -136,7 +145,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: AnimationLimiter(
               child: CustomScrollView(
                 slivers: [
-                  _buildQuickStats(context, topGainer, topLoser, avgChange, provider.marketData.length),
+                  _buildQuickStats(context, topGainer, topLoser, avgChange,
+                      provider.marketData.length),
                   _buildMarketListHeader(context),
                   _buildMarketList(context, filteredMarkets),
                 ],
@@ -295,13 +305,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurface,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
         ),
@@ -363,36 +377,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error, MarketDataProvider provider) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.errorTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                provider.loadMarketData();
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text(AppStrings.retry),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildErrorState(
+      BuildContext context, String error, MarketDataProvider provider) {
+    return ServerWarningWidget(
+      onRetry: () => provider.loadMarketData(),
     );
   }
 
@@ -426,14 +414,17 @@ class _MarketListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = market.isPositiveChange;
-    final changeColor = isPositive ? PulseNowColors.secondary : PulseNowColors.danger;
+    final changeColor =
+        isPositive ? PulseNowColors.secondary : PulseNowColors.danger;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: InkWell(
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${market.symbol} ${AppStrings.detailsComingSoon}')),
+            SnackBar(
+                content:
+                    Text('${market.symbol} ${AppStrings.detailsComingSoon}')),
           );
         },
         borderRadius: BorderRadius.circular(12),
@@ -470,7 +461,8 @@ class _MarketListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: changeColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -480,18 +472,20 @@ class _MarketListItem extends StatelessWidget {
                       children: [
                         Text(
                           '${market.change24h >= 0 ? '+' : ''}${market.change24h.formatCurrency()}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: changeColor,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: changeColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           market.changePercent24h.formatPercentage(),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: changeColor,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: changeColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ],
                     ),

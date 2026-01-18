@@ -88,7 +88,7 @@ class MarketDataProvider with ChangeNotifier {
         await _webSocketService.connect();
       }
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();

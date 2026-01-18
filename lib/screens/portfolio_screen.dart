@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/portfolio_provider.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../shared/widgets/server_warning_widget.dart';
 import '../utils/strings.dart';
 import '../utils/formatters.dart';
 import '../core/theme/constant/pulse_now_colors.dart';
@@ -72,39 +73,41 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         ],
       ),
       body: Consumer<PortfolioProvider>(
-      builder: (context, provider, child) {
-        if (provider.isLoading && provider.summary == null) {
-          return _buildShimmerLoading(context);
-        }
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.summary == null) {
+            return _buildShimmerLoading(context);
+          }
 
-        if (provider.error != null && provider.summary == null) {
-          return _buildErrorState(context, provider.error!, provider);
-        }
+          if (provider.error != null && provider.summary == null) {
+            return _buildErrorState(context, provider.error!, provider);
+          }
 
-        return RefreshIndicator(
-          onRefresh: _handleRefresh,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (provider.summary != null) _buildSummaryCard(context, provider.summary!),
-                const SizedBox(height: 16),
-                Text(
-                  AppStrings.holdings,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 8),
-                if (provider.holdings.isEmpty)
-                  _buildEmptyState(context)
-                else
-                  ...provider.holdings.map((holding) => _buildHoldingCard(context, holding)),
-              ],
+          return RefreshIndicator(
+            onRefresh: _handleRefresh,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (provider.summary != null)
+                    _buildSummaryCard(context, provider.summary!),
+                  const SizedBox(height: 16),
+                  Text(
+                    AppStrings.holdings,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  if (provider.holdings.isEmpty)
+                    _buildEmptyState(context)
+                  else
+                    ...provider.holdings
+                        .map((holding) => _buildHoldingCard(context, holding)),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
       ),
       bottomNavigationBar: const AppBottomNavBar(),
     );
@@ -113,47 +116,23 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget _buildShimmerLoading(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
+      children: const [
         ShimmerWidget(height: 150, radius: 16),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ShimmerWidget(height: 80, radius: 8),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ShimmerWidget(height: 80, radius: 8),
       ],
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error, PortfolioProvider provider) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.errorTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                provider.loadPortfolioSummary();
-                provider.loadHoldings();
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text(AppStrings.retry),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildErrorState(
+      BuildContext context, String error, PortfolioProvider provider) {
+    return ServerWarningWidget(
+      onRetry: () {
+        provider.loadPortfolioSummary();
+        provider.loadHoldings();
+      },
     );
   }
 
@@ -195,7 +174,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       Text(
                         '\$$totalPnl',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: isPositive ? PulseNowColors.secondary : PulseNowColors.danger,
+                              color: isPositive
+                                  ? PulseNowColors.secondary
+                                  : PulseNowColors.danger,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -214,7 +195,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       Text(
                         '${isPositive ? '+' : ''}$totalPnlPercent%',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: isPositive ? PulseNowColors.secondary : PulseNowColors.danger,
+                              color: isPositive
+                                  ? PulseNowColors.secondary
+                                  : PulseNowColors.danger,
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -267,11 +250,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppStrings.quantity,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                  children: [
+                    Text(
+                      AppStrings.quantity,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                     Text(
                       quantity.toStringAsFixed(4),
                       style: Theme.of(context).textTheme.bodyMedium,
@@ -280,11 +263,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        AppStrings.value,
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                  children: [
+                    Text(
+                      AppStrings.value,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                     Text(
                       value.formatCurrency(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -308,7 +291,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     Text(
                       '${pnl >= 0 ? '+' : ''}${pnl.formatCurrency()}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isPositive ? PulseNowColors.secondary : PulseNowColors.danger,
+                            color: isPositive
+                                ? PulseNowColors.secondary
+                                : PulseNowColors.danger,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -316,7 +301,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     Text(
                       '${pnlPercent >= 0 ? '+' : ''}${pnlPercent.formatPercentage()}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isPositive ? PulseNowColors.secondary : PulseNowColors.danger,
+                            color: isPositive
+                                ? PulseNowColors.secondary
+                                : PulseNowColors.danger,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -337,7 +324,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.account_balance_wallet_outlined, size: 64, color: Colors.grey[400]),
+              Icon(Icons.account_balance_wallet_outlined,
+                  size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 AppStrings.noHoldings,
@@ -352,4 +340,3 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 }
-

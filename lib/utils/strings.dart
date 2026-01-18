@@ -70,4 +70,6 @@ class AppStrings {
   static const String failedToLoadMarketData = 'Failed to load market data';
   static const String networkError = 'Network error';
   static const String unknownError = 'Unknown error';
+  static const String serverDownMessage = 'Unable to connect to server. Please check your connection and try again.';
+  static const String connectionError = 'Connection Error';
 }

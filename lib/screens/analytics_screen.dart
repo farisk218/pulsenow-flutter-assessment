@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/analytics_provider.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
+import '../shared/widgets/server_warning_widget.dart';
 import '../utils/strings.dart';
 import '../core/theme/constant/pulse_now_colors.dart';
 import '../core/theme/theme_provider.dart';
@@ -66,37 +67,40 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         ],
       ),
       body: Consumer<AnalyticsProvider>(
-      builder: (context, provider, child) {
-        if (provider.isLoading && provider.overview == null) {
-          return _buildShimmerLoading(context);
-        }
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.overview == null) {
+            return _buildShimmerLoading(context);
+          }
 
-        if (provider.error != null && provider.overview == null) {
-          return _buildErrorState(context, provider.error!, provider);
-        }
+          if (provider.error != null && provider.overview == null) {
+            return _buildErrorState(context, provider.error!, provider);
+          }
 
-        return RefreshIndicator(
-          onRefresh: () async {
-            await provider.loadOverview();
-            await provider.loadTrends();
-            await provider.loadSentiment();
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (provider.overview != null) _buildOverviewCard(context, provider.overview!),
-                const SizedBox(height: 16),
-                if (provider.trends != null) _buildTrendsCard(context, provider.trends!),
-                const SizedBox(height: 16),
-                if (provider.sentiment != null) _buildSentimentCard(context, provider.sentiment!),
-              ],
+          return RefreshIndicator(
+            onRefresh: () async {
+              await provider.loadOverview();
+              await provider.loadTrends();
+              await provider.loadSentiment();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (provider.overview != null)
+                    _buildOverviewCard(context, provider.overview!),
+                  const SizedBox(height: 16),
+                  if (provider.trends != null)
+                    _buildTrendsCard(context, provider.trends!),
+                  const SizedBox(height: 16),
+                  if (provider.sentiment != null)
+                    _buildSentimentCard(context, provider.sentiment!),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
       ),
       bottomNavigationBar: const AppBottomNavBar(),
     );
@@ -105,55 +109,33 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   Widget _buildShimmerLoading(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
+      children: const [
         ShimmerWidget(height: 200, radius: 16),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ShimmerWidget(height: 150, radius: 16),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ShimmerWidget(height: 180, radius: 16),
       ],
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String error, AnalyticsProvider provider) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: PulseNowColors.danger),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.errorTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              error,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () {
-                provider.loadOverview();
-                provider.loadTrends();
-                provider.loadSentiment();
-              },
-              icon: const Icon(Icons.refresh),
-              label: const Text(AppStrings.retry),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildErrorState(
+      BuildContext context, String error, AnalyticsProvider provider) {
+    return ServerWarningWidget(
+      onRetry: () {
+        provider.loadOverview();
+        provider.loadTrends();
+        provider.loadSentiment();
+      },
     );
   }
 
-  Widget _buildOverviewCard(BuildContext context, Map<String, dynamic> overview) {
+  Widget _buildOverviewCard(
+      BuildContext context, Map<String, dynamic> overview) {
     final topGainer = overview['topGainer'] as Map<String, dynamic>?;
     final topLoser = overview['topLoser'] as Map<String, dynamic>?;
-    final marketDominance = overview['marketDominance'] as Map<String, dynamic>?;
+    final marketDominance =
+        overview['marketDominance'] as Map<String, dynamic>?;
 
     return Card(
       child: Padding(
@@ -271,7 +253,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildDominanceBar(BuildContext context, Map<String, dynamic> dominance) {
+  Widget _buildDominanceBar(
+      BuildContext context, Map<String, dynamic> dominance) {
     final btc = (dominance['btc'] as num?)?.toDouble() ?? 0;
     final eth = (dominance['eth'] as num?)?.toDouble() ?? 0;
     final others = (dominance['others'] as num?)?.toDouble() ?? 0;
@@ -316,9 +299,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${AppStrings.btc}: ${btc.toStringAsFixed(1)}%', style: Theme.of(context).textTheme.bodySmall),
-            Text('${AppStrings.eth}: ${eth.toStringAsFixed(1)}%', style: Theme.of(context).textTheme.bodySmall),
-            Text('${AppStrings.others}: ${others.toStringAsFixed(1)}%', style: Theme.of(context).textTheme.bodySmall),
+            Text('${AppStrings.btc}: ${btc.toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.bodySmall),
+            Text('${AppStrings.eth}: ${eth.toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.bodySmall),
+            Text('${AppStrings.others}: ${others.toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ],
@@ -365,7 +351,8 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildSentimentCard(BuildContext context, Map<String, dynamic> sentiment) {
+  Widget _buildSentimentCard(
+      BuildContext context, Map<String, dynamic> sentiment) {
     final overall = sentiment['overall'] as Map<String, dynamic>?;
     final score = (overall?['score'] as num?)?.toInt() ?? 0;
     final label = overall?['label'] as String? ?? 'Neutral';
@@ -388,10 +375,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     children: [
                       Text(
                         score.toString(),
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _getSentimentColor(score),
-                            ),
+                        style:
+                            Theme.of(context).textTheme.displayMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: _getSentimentColor(score),
+                                ),
                       ),
                       Text(
                         label,
@@ -423,4 +411,3 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     return PulseNowColors.danger;
   }
 }
-

@@ -66,7 +66,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: PulseNowColors.lightSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -168,7 +168,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: PulseNowColors.darkSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
