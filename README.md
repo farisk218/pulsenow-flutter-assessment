@@ -2,11 +2,17 @@
 
 A Flutter application demonstrating real-time crypto market data integration with REST API and WebSocket support.
 
-## Demo & Screenshots
+## 🎥 Demo & Screenshots
 
-![App Demo](assets/demo/intro_demo.gif) ![Dashboard Screen](assets/demo/demo1.png) ![Analytics Screen](assets/demo/demo2.png) ![Portfolio Screen](assets/demo/demo3.png)
+<p align="center">
+  <img src="assets/demo/intro_demo.gif" width="180" />
+  <img src="assets/demo/demo1.png" width="180" />
+  <img src="assets/demo/demo2.png" width="180" />
+  <img src="assets/demo/demo3.png" width="180" />
+</p>
 
-## Features
+## ✨ Features
+
 
 ### ✅ Core Features (Required)
 - **Market Data Display**: List of crypto market symbols with real-time price updates
