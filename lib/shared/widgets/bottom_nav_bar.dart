@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/app_router.dart';
 import '../../utils/strings.dart';
+import '../../core/theme/constant/pulse_now_colors.dart';
 
 /// Shared bottom navigation bar for all screens
 class AppBottomNavBar extends StatelessWidget {
@@ -20,6 +21,7 @@ class AppBottomNavBar extends StatelessWidget {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
+      selectedItemColor: PulseNowColors.primary,
       onTap: (index) {
         switch (index) {
           case 0:
