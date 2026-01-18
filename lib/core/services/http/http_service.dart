@@ -4,7 +4,9 @@ import '../../../utils/constants.dart';
 
 class HttpService {
   static const String baseUrl = AppConstants.baseUrl;
+  static const String rootUrl = AppConstants.rootUrl;
 
+  /// Get request using the API base URL (for /api endpoints)
   static Future<Map<String, dynamic>> get(String endpoint) async {
     try {
       final uri = Uri.parse('$baseUrl$endpoint');
@@ -17,7 +19,8 @@ class HttpService {
         final jsonData = json.decode(response.body) as Map<String, dynamic>;
         return jsonData;
       } else {
-        throw Exception('HTTP ${response.statusCode}: ${response.reasonPhrase}');
+        throw Exception(
+            'HTTP ${response.statusCode}: ${response.reasonPhrase}');
       }
     } on FormatException catch (e) {
       throw Exception('Failed to parse response: $e');
@@ -46,7 +49,29 @@ class HttpService {
         final jsonData = json.decode(response.body) as Map<String, dynamic>;
         return jsonData;
       } else {
-        throw Exception('HTTP ${response.statusCode}: ${response.reasonPhrase}');
+        throw Exception(
+            'HTTP ${response.statusCode}: ${response.reasonPhrase}');
+      }
+    } on FormatException catch (e) {
+      throw Exception('Failed to parse response: $e');
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Network error: $e');
+    }
+  }
+
+  /// Get request using the root URL (for non-/api endpoints like /health)
+  static Future<Map<String, dynamic>> getRoot(String endpoint) async {
+    try {
+      final uri = Uri.parse('$rootUrl$endpoint');
+      final response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body) as Map<String, dynamic>;
+        return jsonData;
+      } else {
+        throw Exception(
+            'HTTP ${response.statusCode}: ${response.reasonPhrase}');
       }
     } on FormatException catch (e) {
       throw Exception('Failed to parse response: $e');

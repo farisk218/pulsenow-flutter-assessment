@@ -17,6 +17,17 @@ class MarketDataProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  /// WebSocket connection state stream for real-time connection status
+  Stream<WebSocketConnectionState> get webSocketStateStream =>
+      _webSocketService.stateStream;
+
+  /// Current WebSocket connection state
+  WebSocketConnectionState get webSocketConnectionState =>
+      _webSocketService.connectionState;
+
+  /// Whether WebSocket is currently connected
+  bool get isWebSocketConnected => _webSocketService.isConnected;
+
   MarketDataProvider() {
     _initWebSocket();
   }
@@ -53,8 +64,9 @@ class MarketDataProvider with ChangeNotifier {
       // Recalculate changePercent24h if price changed
       final newPrice = parseDouble(updateData['price']) ?? existing.price;
       final priceChange = newPrice - existing.price;
-      final newChangePercent24h =
-          existing.price != 0 ? (priceChange / existing.price) * 100 : existing.changePercent24h;
+      final newChangePercent24h = existing.price != 0
+          ? (priceChange / existing.price) * 100
+          : existing.changePercent24h;
 
       final updated = MarketData(
         symbol: existing.symbol,

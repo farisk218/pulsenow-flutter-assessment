@@ -2,6 +2,18 @@ import '../core/services/http/http_service.dart';
 import '../utils/constants.dart';
 
 class ApiService {
+  /// Check server health status
+  /// 
+  /// Returns server health information including status and timestamp
+  Future<Map<String, dynamic>> checkHealth() async {
+    try {
+      final jsonData = await HttpService.getRoot(AppConstants.healthEndpoint);
+      return jsonData;
+    } catch (e) {
+      throw Exception('Health check failed: $e');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getMarketData() async {
     final jsonData = await HttpService.get(AppConstants.marketDataEndpoint);
 

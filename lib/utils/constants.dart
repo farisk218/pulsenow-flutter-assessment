@@ -5,12 +5,15 @@ class AppConstants {
   // For iOS simulator, localhost works fine
   static const String baseUrl = 'http://localhost:3000/api';
   static const String wsUrl = 'ws://localhost:3000';
+  static const String rootUrl = 'http://localhost:3000';
 
   // For Android emulator, uncomment these:
   // static const String baseUrl = 'http://10.0.2.2:3000/api';
   // static const String wsUrl = 'ws://10.0.2.2:3000';
+  // static const String rootUrl = 'http://10.0.2.2:3000';
 
   // API Endpoints
+  static const String healthEndpoint = '/health';
   static const String marketDataEndpoint = '/market-data';
   static const String analyticsEndpoint = '/analytics';
   static const String portfolioEndpoint = '/portfolio';

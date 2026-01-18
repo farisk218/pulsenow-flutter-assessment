@@ -8,6 +8,7 @@ import '../utils/strings.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../shared/widgets/server_warning_widget.dart';
+import '../shared/widgets/websocket_connection_indicator.dart';
 import '../core/theme/constant/pulse_now_colors.dart';
 import '../core/theme/theme_provider.dart';
 
@@ -89,22 +90,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 12),
             const Text(AppStrings.pulseMarket),
             const SizedBox(width: 12),
-            Consumer<MarketDataProvider>(
-              builder: (context, provider, child) {
-                final isConnected =
-                    provider.error == null && !provider.isLoading;
-                return Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: isConnected
-                        ? PulseNowColors.secondary
-                        : PulseNowColors.danger,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              },
-            ),
+            const WebSocketConnectionIndicator(),
           ],
         ),
         actions: [
