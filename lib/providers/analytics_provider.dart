@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
+import '../models/analytics_model.dart';
 
 class AnalyticsProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
-  Map<String, dynamic>? _overview;
-  Map<String, dynamic>? _trends;
-  Map<String, dynamic>? _sentiment;
+  AnalyticsOverview? _overview;
+  AnalyticsTrends? _trends;
+  AnalyticsSentiment? _sentiment;
   bool _isLoading = false;
   String? _error;
 
-  Map<String, dynamic>? get overview => _overview;
-  Map<String, dynamic>? get trends => _trends;
-  Map<String, dynamic>? get sentiment => _sentiment;
+  AnalyticsOverview? get overview => _overview;
+  AnalyticsTrends? get trends => _trends;
+  AnalyticsSentiment? get sentiment => _sentiment;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -22,9 +23,10 @@ class AnalyticsProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _overview = await _apiService.getAnalyticsOverview();
+      final data = await _apiService.getAnalyticsOverview();
+      _overview = AnalyticsOverview.fromJson(data);
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -37,9 +39,10 @@ class AnalyticsProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _trends = await _apiService.getAnalyticsTrends(timeframe: timeframe);
+      final data = await _apiService.getAnalyticsTrends(timeframe: timeframe);
+      _trends = AnalyticsTrends.fromJson(data);
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -52,9 +55,10 @@ class AnalyticsProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _sentiment = await _apiService.getAnalyticsSentiment();
+      final data = await _apiService.getAnalyticsSentiment();
+      _sentiment = AnalyticsSentiment.fromJson(data);
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();

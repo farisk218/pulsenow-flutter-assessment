@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/portfolio_provider.dart';
+import '../models/portfolio_model.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../shared/widgets/server_warning_widget.dart';
@@ -136,11 +137,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, Map<String, dynamic> summary) {
-    final totalValue = summary['totalValue'] as String? ?? '0';
-    final totalPnl = summary['totalPnl'] as String? ?? '0';
-    final totalPnlPercent = summary['totalPnlPercent'] as String? ?? '0';
-    final isPositive = (double.tryParse(totalPnl) ?? 0) >= 0;
+  Widget _buildSummaryCard(BuildContext context, PortfolioSummary summary) {
+    final totalValue = summary.totalValue;
+    final totalPnl = summary.totalPnl;
+    final totalPnlPercent = summary.totalPnlPercent;
+    final isPositive = summary.isPositive;
 
     return Card(
       child: Padding(
@@ -212,15 +213,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
 
-  Widget _buildHoldingCard(BuildContext context, Map<String, dynamic> holding) {
-    final symbol = holding['symbol'] as String? ?? '';
-    final quantity = (holding['quantity'] as num?)?.toDouble() ?? 0;
-    final currentPrice = (holding['currentPrice'] as num?)?.toDouble() ?? 0;
-    final value = (holding['value'] as num?)?.toDouble() ?? 0;
-    final pnl = (holding['pnl'] as num?)?.toDouble() ?? 0;
-    final pnlPercent = (holding['pnlPercent'] as num?)?.toDouble() ?? 0;
-    final allocation = (holding['allocation'] as num?)?.toDouble() ?? 0;
-    final isPositive = pnl >= 0;
+  Widget _buildHoldingCard(BuildContext context, PortfolioHolding holding) {
+    final isPositive = holding.isPositive;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -233,13 +227,13 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  symbol,
+                  holding.symbol,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 Text(
-                  '${allocation.toStringAsFixed(1)}%',
+                  '${holding.allocation.toStringAsFixed(1)}%',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
@@ -256,7 +250,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     Text(
-                      quantity.toStringAsFixed(4),
+                      holding.quantity.toStringAsFixed(4),
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -269,7 +263,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     Text(
-                      value.formatCurrency(),
+                      holding.value.formatCurrency(),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -283,13 +277,13 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${AppStrings.price}: ${currentPrice.formatCurrency()}',
+                  '${AppStrings.price}: ${holding.currentPrice.formatCurrency()}',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Row(
                   children: [
                     Text(
-                      '${pnl >= 0 ? '+' : ''}${pnl.formatCurrency()}',
+                      '${holding.pnl >= 0 ? '+' : ''}${holding.pnl.formatCurrency()}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: isPositive
                                 ? PulseNowColors.secondary
@@ -299,7 +293,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${pnlPercent >= 0 ? '+' : ''}${pnlPercent.formatPercentage()}',
+                      '${holding.pnlPercent >= 0 ? '+' : ''}${holding.pnlPercent.formatPercentage()}',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: isPositive
                                 ? PulseNowColors.secondary

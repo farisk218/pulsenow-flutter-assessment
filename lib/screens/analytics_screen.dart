@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/analytics_provider.dart';
+import '../models/analytics_model.dart';
 import '../shared/widgets/shimmer_widget.dart';
 import '../shared/widgets/bottom_nav_bar.dart';
 import '../shared/widgets/server_warning_widget.dart';
@@ -130,13 +131,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildOverviewCard(
-      BuildContext context, Map<String, dynamic> overview) {
-    final topGainer = overview['topGainer'] as Map<String, dynamic>?;
-    final topLoser = overview['topLoser'] as Map<String, dynamic>?;
-    final marketDominance =
-        overview['marketDominance'] as Map<String, dynamic>?;
-
+  Widget _buildOverviewCard(BuildContext context, AnalyticsOverview overview) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -154,45 +149,45 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   child: _buildStatItem(
                     context,
                     AppStrings.totalMarketCap,
-                    '\$${(overview['totalMarketCap'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                    '\$${overview.totalMarketCap.toStringAsFixed(0)}',
                   ),
                 ),
                 Expanded(
                   child: _buildStatItem(
                     context,
                     AppStrings.volume24h,
-                    '\$${(overview['totalVolume24h'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                    '\$${overview.totalVolume24h.toStringAsFixed(0)}',
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            if (topGainer != null)
+            if (overview.topGainer != null)
               _buildLeaderItem(
                 context,
                 AppStrings.topGainer,
-                topGainer['symbol'] as String? ?? '',
-                (topGainer['change'] as num?)?.toDouble() ?? 0,
+                overview.topGainer!.symbol,
+                overview.topGainer!.change,
                 true,
               ),
-            if (topLoser != null) ...[
+            if (overview.topLoser != null) ...[
               const SizedBox(height: 8),
               _buildLeaderItem(
                 context,
                 AppStrings.topLoser,
-                topLoser['symbol'] as String? ?? '',
-                (topLoser['change'] as num?)?.toDouble() ?? 0,
+                overview.topLoser!.symbol,
+                overview.topLoser!.change,
                 false,
               ),
             ],
-            if (marketDominance != null) ...[
+            if (overview.marketDominance != null) ...[
               const SizedBox(height: 16),
               Text(
                 AppStrings.marketDominance,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              _buildDominanceBar(context, marketDominance),
+              _buildDominanceBar(context, overview.marketDominance!),
             ],
           ],
         ),
@@ -253,11 +248,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildDominanceBar(
-      BuildContext context, Map<String, dynamic> dominance) {
-    final btc = (dominance['btc'] as num?)?.toDouble() ?? 0;
-    final eth = (dominance['eth'] as num?)?.toDouble() ?? 0;
-    final others = (dominance['others'] as num?)?.toDouble() ?? 0;
+  Widget _buildDominanceBar(BuildContext context, MarketDominance dominance) {
+    final btc = dominance.btc;
+    final eth = dominance.eth;
+    final others = dominance.others;
 
     return Column(
       children: [
@@ -311,10 +305,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildTrendsCard(BuildContext context, Map<String, dynamic> trends) {
-    final summary = trends['summary'] as Map<String, dynamic>?;
-    final change = (summary?['change'] as num?)?.toDouble() ?? 0;
-    final volatility = (summary?['volatility'] as num?)?.toDouble() ?? 0;
+  Widget _buildTrendsCard(BuildContext context, AnalyticsTrends trends) {
+    final change = trends.summary?.change ?? 0;
+    final volatility = trends.summary?.volatility ?? 0;
 
     return Card(
       child: Padding(
@@ -323,7 +316,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${AppStrings.trends} (${trends['timeframe'] ?? '24h'})',
+              '${AppStrings.trends} (${trends.timeframe})',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
@@ -352,10 +345,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Widget _buildSentimentCard(
-      BuildContext context, Map<String, dynamic> sentiment) {
-    final overall = sentiment['overall'] as Map<String, dynamic>?;
-    final score = (overall?['score'] as num?)?.toInt() ?? 0;
-    final label = overall?['label'] as String? ?? 'Neutral';
+      BuildContext context, AnalyticsSentiment sentiment) {
+    final score = sentiment.overall?.score ?? 0;
+    final label = sentiment.overall?.label ?? 'Neutral';
 
     return Card(
       child: Padding(

@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
+import '../models/portfolio_model.dart';
 
 class PortfolioProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
 
-  Map<String, dynamic>? _summary;
-  List<Map<String, dynamic>> _holdings = [];
-  Map<String, dynamic>? _performance;
+  PortfolioSummary? _summary;
+  List<PortfolioHolding> _holdings = [];
+  PortfolioPerformance? _performance;
   bool _isLoading = false;
   String? _error;
 
-  Map<String, dynamic>? get summary => _summary;
-  List<Map<String, dynamic>> get holdings => _holdings;
-  Map<String, dynamic>? get performance => _performance;
+  PortfolioSummary? get summary => _summary;
+  List<PortfolioHolding> get holdings => _holdings;
+  PortfolioPerformance? get performance => _performance;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -22,9 +23,10 @@ class PortfolioProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _summary = await _apiService.getPortfolioSummary();
+      final data = await _apiService.getPortfolioSummary();
+      _summary = PortfolioSummary.fromJson(data);
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -38,9 +40,9 @@ class PortfolioProvider with ChangeNotifier {
 
     try {
       final data = await _apiService.getPortfolioHoldings();
-      _holdings = data;
+      _holdings = data.map((json) => PortfolioHolding.fromJson(json)).toList();
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -53,9 +55,11 @@ class PortfolioProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _performance = await _apiService.getPortfolioPerformance(timeframe: timeframe);
+      final data =
+          await _apiService.getPortfolioPerformance(timeframe: timeframe);
+      _performance = PortfolioPerformance.fromJson(data);
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -83,7 +87,7 @@ class PortfolioProvider with ChangeNotifier {
       await loadHoldings();
       await loadPortfolioSummary();
     } catch (e) {
-      _error = e.toString().replaceFirst('Exception: ', '');
+      _error = 'Server connection failed';
     } finally {
       _isLoading = false;
       notifyListeners();
